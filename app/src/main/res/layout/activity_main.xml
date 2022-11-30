@@ -7,12 +7,22 @@
     android:padding="16dp"
     tools:context=".MainActivity">
 
+
+
     <TextView
         android:id="@+id/text_view_result"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textSize="20sp"
         android:textColor="@color/white"/>
+
+    <ImageView
+        android:id="@+id/main_image"
+        android:layout_width="115dp"
+        android:layout_height="491dp"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="centerInside" />
+
 
     <Button
         android:id="@+id/button_parse"
