@@ -18,19 +18,20 @@ public class ExampleAdapter extends RecyclerView.Adapter<ExampleAdapter.ExampleV
 
     private Context mContext ;
     private ArrayList<ExampleItem> mExamplelist;
+    private OnItemClickListener mListener;
 
+    public interface OnItemClickListener{
+        void onItemClick(int position);
+    }
 
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener ;
+    }
     public ExampleAdapter(Context context, ArrayList<ExampleItem> examplelist){
         mContext =context;
         mExamplelist = examplelist;
-
-
-        public interface OnItemClickListener{
-            void onItemClick(int position);
-
-        }
-
     }
+
 
     @NonNull
     @Override
@@ -78,6 +79,19 @@ public class ExampleAdapter extends RecyclerView.Adapter<ExampleAdapter.ExampleV
             mTextViewCreator = itemView.findViewById(R.id.text_view_creator);
             mTextViewLikes = itemView.findViewById(R.id.text_view_likes);
             mTextViewDate = itemView.findViewById(R.id.text_view_date);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(mListener != null){
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION){
+                            mListener.onItemClick(position);
+
+                        }
+                    }
+                }
+            });
 
 
         }

@@ -5,6 +5,7 @@ package com.example.test_code_api;
 
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,21 +39,24 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ExampleAdapter.OnItemClickListener {
 
 
-    private RecyclerView mRecyclerView ;
+    public static final String EXTRA_URL = "imageUrl"; // sert pr le detailActivity
+    public static final String EXTRA_CREATOR = "overview";  // sert pr le detailActivity
+
+    public String overview;
+
+    private RecyclerView mRecyclerView;
     private ExampleAdapter mExampleAdataper;
-    private ArrayList<ExampleItem> mExamplelist ;
+    private ArrayList<ExampleItem> mExamplelist;
     private RequestQueue mRequestQueue;
 
-     TextView mTextViewResult;
-     ImageView imageView ;
-     RequestQueue mQueue ;
-     String urlimage ;
-
-
-
+    public int k = 1;
+    TextView mTextViewResult;
+    ImageView imageView;
+    RequestQueue mQueue;
+    String urlimage;
 
 
     @SuppressLint("MissingInflatedId")
@@ -71,8 +75,12 @@ public class MainActivity extends AppCompatActivity {
         parseJSON();
     }
 
-    private void parseJSON(){
-        String Url = "https://api.themoviedb.org/3/movie/top_rated?api_key=94919f610cee6635900db1b211be75e7&language=en-US&page=1";
+    private void parseJSON() {
+
+        for (k = 0; k < 10; k++)
+        {
+
+            String Url = "https://api.themoviedb.org/3/movie/top_rated?api_key=94919f610cee6635900db1b211be75e7&language=en-US&page=" + k;
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, Url, null,
                 new Response.Listener<JSONObject>() {
@@ -81,20 +89,20 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             JSONArray jsonArray = response.getJSONArray("results");
 
-                            for(int i =0 ; i<jsonArray.length();i++){
+                            for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject results = jsonArray.getJSONObject(i);
                                 String title = results.getString("title");
                                 String date = results.getString("release_date");
-                                double rating = results.getInt("vote_average") ;
-
+                                double rating = results.getInt("vote_average");
+                                overview = results.getString("overview");
                                 String image = results.getString("poster_path");
-                                urlimage = "https://image.tmdb.org/t/p/w500"+ image  ;
-
-                                mExamplelist.add(new ExampleItem(urlimage,title,rating,date));
+                                urlimage = "https://image.tmdb.org/t/p/w500" + image;
+                                mExamplelist.add(new ExampleItem(urlimage, title, rating, date, overview));
                             }
 
                             mExampleAdataper = new ExampleAdapter(MainActivity.this, mExamplelist);
                             mRecyclerView.setAdapter(mExampleAdataper);
+                            mExampleAdataper.setOnItemClickListener(MainActivity.this);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -111,5 +119,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+}
 
+
+    @Override
+    public void onItemClick(int position) {
+        Intent detailIntent = new Intent(this, DetailActivity.class);
+        ExampleItem clickedItem = mExamplelist.get(position);
+
+        detailIntent.putExtra(EXTRA_URL, clickedItem.getImageUrl());
+        detailIntent.putExtra(EXTRA_CREATOR,clickedItem.getOverview());
+
+        startActivity(detailIntent);
+
+    }
 }

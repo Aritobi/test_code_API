@@ -5,14 +5,16 @@ public class ExampleItem {
     private String mCreator ;
     private double mLikes ;
     private String mDate ;
+    private String mOverview;
 
 
-    public ExampleItem(String imageUrl, String creator, double likes, String Date){
+    public ExampleItem(String imageUrl, String creator, double likes, String Date, String Overview){
 
         mImageUrl =imageUrl;
         mCreator = creator ;
         mLikes =likes;
         mDate = Date;
+        mOverview = Overview ;
 
     }
 
@@ -29,4 +31,8 @@ public class ExampleItem {
     }
 
     public String getDate() { return  mDate; }
+
+    public String getOverview() {
+        return mOverview;
+    }
 }

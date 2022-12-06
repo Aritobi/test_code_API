@@ -19,19 +19,12 @@
         android:id="@+id/text_view_creator_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:text="Resumé"
         android:textColor="@android:color/black"
-        android:textSize="40sp" />
+        android:textSize="20sp" />
 
-    <TextView
-        android:id="@+id/text_view_like_detail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:text="Acteur: "
-        android:textSize="30sp" />
+
 
 </LinearLayout>
