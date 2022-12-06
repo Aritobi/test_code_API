@@ -4,31 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     tools:context=".MainActivity">
 
 
 
-    <TextView
-        android:id="@+id/text_view_result"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textSize="20sp"
-        android:textColor="@color/white"/>
-
-    <ImageView
-        android:id="@+id/main_image"
-        android:layout_width="115dp"
-        android:layout_height="491dp"
-        android:layout_gravity="center_horizontal"
-        android:scaleType="centerInside" />
+        android:background="@android:color/darker_gray"/>
 
 
-    <Button
-        android:id="@+id/button_parse"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:text="parse" />
+
 
 
 

@@ -1,136 +1,115 @@
 package com.example.test_code_api;
 
 
-import android.graphics.Bitmap;
+
+
+
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.app.ProgressDialog;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.widget.ImageView;
 
 
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.transition.Transition;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.snackbar.Snackbar;
+import com.bumptech.glide.Glide;
 
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
 
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
-import com.example.test_code_api.databinding.ActivityMainBinding;
-
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import kotlin.text.UStringsKt;
+import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity {
-    private TextView mTextViewResult;
-    private RequestQueue mQueue ;
-    private String urlimage ;
-    ImageView imageView;
 
-    private AppBarConfiguration appBarConfiguration;
-    private ActivityMainBinding binding;
 
+    private RecyclerView mRecyclerView ;
+    private ExampleAdapter mExampleAdataper;
+    private ArrayList<ExampleItem> mExamplelist ;
+    private RequestQueue mRequestQueue;
+
+     TextView mTextViewResult;
+     ImageView imageView ;
+     RequestQueue mQueue ;
+     String urlimage ;
+
+
+
+
+
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mRecyclerView = findViewById(R.id.recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mTextViewResult = findViewById((R.id.text_view_result));
-        Button buttonParse = findViewById(R.id.button_parse);
+        mExamplelist = new ArrayList<>();
 
-        mQueue = Volley.newRequestQueue(this);
-
-        buttonParse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                jsonParse();
-
-
-            }
-        });
+        mRequestQueue = Volley.newRequestQueue(this);
+        parseJSON();
     }
 
-    private void jsonParse() {
-           /* String url = "https://api.themoviedb.org/3/movie/299536?api_key=94919f610cee6635900db1b211be75e7&language=en-US"*/
-         String url = "https://api.themoviedb.org/3/trending/all/day?api_key=94919f610cee6635900db1b211be75e7" ;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    JSONArray jsonArray =response.getJSONArray("results");
+    private void parseJSON(){
+        String Url = "https://api.themoviedb.org/3/movie/top_rated?api_key=94919f610cee6635900db1b211be75e7&language=en-US&page=1";
 
-                    for(int i = 0 ; i<3;i++) { /* ajouter jsonArray.length() pour la taille totale du dictionnaire */
-                        JSONObject results = jsonArray.getJSONObject(i);
-                        setContentView(R.layout.activity_main);
-                        imageView = (ImageView) findViewById(R.id.main_image);
-                        loadRandomImage();
-                        String title = results.getString("title");
-                        int id = results.getInt("id");
-                        String overview = results.getString("overview");
-                        String image = results.getString("poster_path");
-                        urlimage = "https://image.tmdb.org/t/p/w500"+ image  ;
-                        /* TROUVER UN FILM */
-                        String movietest = "https://api.themoviedb.org/3/movie/"+ id +"?api_key=94919f610cee6635900db1b211be75e7&language=en-US" ;
-                        mTextViewResult.append(title + ", " + String.valueOf(id) + ", " + overview + ",  " + urlimage +  "\n\n\n");
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, Url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray jsonArray = response.getJSONArray("results");
+
+                            for(int i =0 ; i<jsonArray.length();i++){
+                                JSONObject results = jsonArray.getJSONObject(i);
+                                String title = results.getString("title");
+                                String date = results.getString("release_date");
+                                double rating = results.getInt("vote_average") ;
+
+                                String image = results.getString("poster_path");
+                                urlimage = "https://image.tmdb.org/t/p/w500"+ image  ;
+
+                                mExamplelist.add(new ExampleItem(urlimage,title,rating,date));
+                            }
+
+                            mExampleAdataper = new ExampleAdapter(MainActivity.this, mExamplelist);
+                            mRecyclerView.setAdapter(mExampleAdataper);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                /* JsonObjectRequest va permettre d'avoir une réponse lors de la requete */
-
-
-            }
-        }, new Response.ErrorListener() {
+                }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-           /* lorsque qu'on  va avoir une erreur lors de la requete */
             }
         });
 
-        mQueue.add(request);
+        mRequestQueue.add(request);
+
     }
 
-    private void loadRandomImage() {
-
-        Glide.with(this)
-                .asBitmap()
-                .load(urlimage)
-                .into(new BitmapImageViewTarget(imageView) {
-                    @Override
-                    public void onResourceReady(Bitmap bitmap, Transition <? super Bitmap> transition) {
-                        super.onResourceReady(bitmap, transition);
-                        assert imageView != null;
-                        imageView.setImageBitmap(bitmap);
-                    }
-                });
-    }
 
 }
